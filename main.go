@@ -110,13 +110,13 @@ func deleteProduk(w http.ResponseWriter, r *http.Request) {
 }
 
 type Config struct {
-	Port    string `mapstructure: "PORT"`
-	DB_CONN string `mapstructure: "DB_CONN"`
+	Port    string `mapstructure:"PORT"`
+	DB_CONN string `mapstructure:"DB_CONN"`
 }
 
 func main() {
 	viper.AutomaticEnv()
-	viper.SetEnvKeyReplacer(strings.NewReplacer(",", "_"))
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 	if _, err := os.Stat(".env"); err == nil {
 		viper.SetConfigFile(".env")
 		_ = viper.ReadInConfig()
