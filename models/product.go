@@ -1,8 +1,8 @@
-package model
+package models
 
 type Product struct {
 	ID    int    `json:"id"`
 	Name  string `json:"name"`
-	Price string `"json:price"`
-	Stock string `"json:stock`
+	Price string `"json:"price"`
+	Stock string `"json:"stock"`
 }

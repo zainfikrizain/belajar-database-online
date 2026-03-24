@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	_ "github.com/lib/pq"	// _ artinya untuk jaga-jaga kalau digunakan sewaktu-waktu
+	_ "github.com/lib/pq" // _ artinya untuk jaga-jaga kalau digunakan sewaktu-waktu
 )
 
 func InitDB(connectionString string) (*sql.DB, error) {
