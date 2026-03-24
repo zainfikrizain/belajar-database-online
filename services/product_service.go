@@ -3,6 +3,7 @@ package services
 import (
 	"Tugas-2/models"
 	"Tugas-2/repositories"
+	"context"
 )
 
 type ProductService struct {
@@ -13,10 +14,9 @@ func NewProductService(repo *repositories.ProductRepository) *ProductService {
 	return &ProductService{repo: repo}
 }
 
-func (s *ProductService) GetAll() ([]models.Product, error) {
-	return s.repo.GetAll()
+func (s *ProductService) GetAll(ctx context.Context) ([]models.Product, error) {
+	return s.repo.GetAll(ctx)
 }
-
 func (s *ProductService) Create(data *models.Product) error {
 	return s.repo.Create(data)
 }

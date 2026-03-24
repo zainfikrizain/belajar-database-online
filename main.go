@@ -45,7 +45,7 @@ func main() {
 	productService := services.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productService)
 
-	// Echo instance
+	// Echo
 	e := echo.New()
 
 	// routes
@@ -53,13 +53,12 @@ func main() {
 		return c.String(200, "Server is running 🚀")
 	})
 
-	// product routes
 	e.GET("/api/produk", productHandler.GetAll)
 	e.POST("/api/produk", productHandler.Create)
 	e.GET("/api/produk/:id", productHandler.GetByID)
 	e.PUT("/api/produk/:id", productHandler.Update)
 	e.DELETE("/api/produk/:id", productHandler.Delete)
 
-	// start server
+	// start
 	e.Logger.Fatal(e.Start(":" + config.Port))
 }

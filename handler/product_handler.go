@@ -1,8 +1,12 @@
 package handler
 
 import (
+	"Tugas-2/models"
 	"Tugas-2/services"
+	"database/sql"
+	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -16,7 +20,7 @@ func NewProductHandler(service *services.ProductService) *ProductHandler {
 }
 
 func (h *ProductHandler) GetAll(c echo.Context) error {
-	products, err := h.service.GetAllProducts(c.Request().Context())
+	products, err := h.service.GetAll(c.Request().Context())
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "failed to fetch products",
@@ -24,4 +28,100 @@ func (h *ProductHandler) GetAll(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, products)
+}
+
+func (h *ProductHandler) Create(c echo.Context) error {
+	var product models.Product
+
+	if err := c.Bind(&product); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "invalid request body",
+		})
+	}
+
+	if err := h.service.Create(&product); err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to create product",
+		})
+	}
+
+	return c.JSON(http.StatusCreated, product)
+}
+
+func (h *ProductHandler) GetByID(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "invalid id",
+		})
+	}
+
+	product, err := h.service.GetByID(id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return c.JSON(http.StatusNotFound, map[string]string{
+				"error": "product not found",
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to fetch product",
+		})
+	}
+
+	return c.JSON(http.StatusOK, product)
+}
+
+func (h *ProductHandler) Update(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "invalid id",
+		})
+	}
+
+	var product models.Product
+	if err := c.Bind(&product); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "invalid request body",
+		})
+	}
+
+	product.ID = id
+
+	if err := h.service.Update(&product); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return c.JSON(http.StatusNotFound, map[string]string{
+				"error": "product not found",
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to update product",
+		})
+	}
+
+	return c.JSON(http.StatusOK, product)
+}
+
+func (h *ProductHandler) Delete(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "invalid id",
+		})
+	}
+
+	if err := h.service.Delete(id); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return c.JSON(http.StatusNotFound, map[string]string{
+				"error": "product not found",
+			})
+		}
+		return c.JSON(http.StatusInternalServerError, map[string]string{
+			"error": "failed to delete product",
+		})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "deleted successfully",
+	})
 }

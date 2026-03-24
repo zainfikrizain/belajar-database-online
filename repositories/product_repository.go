@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"Tugas-2/models"
+	"context"
 	"database/sql"
 	"errors"
 )
@@ -14,18 +15,17 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func (repo *ProductRepository) GetAll() ([]models.Product, error) {
-	query := "SELECT id, name, price, stock FROM products"
-	rows, err := repo.db.Query(query)
+func (repo *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error) {
+	rows, err := repo.db.QueryContext(ctx, "SELECT id, name, price, stock FROM products")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	products := make([]models.Product, 0)
+
+	var products []models.Product
 	for rows.Next() {
 		var p models.Product
-		err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
-		if err != nil {
+		if err := rows.Scan(&p.ID, &p.Name, &p.Price, &p.Stock); err != nil {
 			return nil, err
 		}
 		products = append(products, p)
@@ -45,10 +45,10 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 
 	var p models.Product
 	err := repo.db.QueryRow(query, id).Scan(&p.ID, &p.Name, &p.Price, &p.Stock)
+	if err == sql.ErrNoRows {
+		return nil, errors.New("produk tidak ditemukan")
+	}
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, sql.ErrNoRows
-		}
 		return nil, err
 	}
 
@@ -56,7 +56,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 }
 
 func (repo *ProductRepository) Update(product *models.Product) error {
-	query := "UPDATE products SET name = $1, price = $2, stock = $3 WHERE id = $4"
+	query := "UPDATE products GET name = $1, price = $2, stock = $3 WHERE id = $4"
 	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.ID)
 	if err != nil {
 		return err
