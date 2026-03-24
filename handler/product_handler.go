@@ -22,8 +22,8 @@ func NewProductHandler(service *services.ProductService) *ProductHandler {
 func (h *ProductHandler) GetAll(c echo.Context) error {
 	products, err := h.service.GetAll(c.Request().Context())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "failed to fetch products",
+		return c.JSON(500, map[string]string{
+			"error": err.Error(),
 		})
 	}
 
@@ -63,8 +63,8 @@ func (h *ProductHandler) GetByID(c echo.Context) error {
 				"error": "product not found",
 			})
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{
-			"error": "failed to fetch product",
+		return c.JSON(500, map[string]string{
+			"error": err.Error(),
 		})
 	}
 
