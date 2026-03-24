@@ -23,7 +23,7 @@ func (h *ProductHandler) GetAll(c echo.Context) error {
 	products, err := h.service.GetAll(c.Request().Context())
 	if err != nil {
 		return c.JSON(500, map[string]string{
-			"error": err.Error(),
+			"error": "blablabla",
 		})
 	}
 
