@@ -35,11 +35,11 @@ func (h *ProductHandler) Create(c echo.Context) error {
 
 	if err := c.Bind(&product); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{
-			"error": "invalid request body",
+			"error": err.Error(), // 👈 see real errorx
 		})
 	}
 
-	if err := h.service.Create(&product); err != nil {
+	if err := h.service.Create(c.Request().Context(), &product); err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "failed to create product",
 		})

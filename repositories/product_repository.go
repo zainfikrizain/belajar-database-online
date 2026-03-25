@@ -35,10 +35,14 @@ func (repo *ProductRepository) GetAll(ctx context.Context) ([]models.Product, er
 	return products, nil
 }
 
-func (repo *ProductRepository) Create(product *models.Product) error {
-	query := "INSERT INTO products (name, price, stock) VALUES ($1, $2, $3) RETURNING id"
-	err := repo.db.QueryRow(query, product.Name, product.Price, product.Stock).Scan(&product.ID)
-	return err
+func (repo *ProductRepository) Create(ctx context.Context, p *models.Product) error {
+	query := `
+		INSERT INTO produk (name, price, stok)
+		VALUES ($1, $2, $3)
+		RETURNING id
+	`
+
+	return repo.db.QueryRowContext(ctx, query, p.Name, p.Price, p.Stock).Scan(&p.ID)
 }
 
 func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
