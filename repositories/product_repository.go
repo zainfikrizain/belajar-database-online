@@ -61,7 +61,7 @@ func (repo *ProductRepository) GetByID(id int) (*models.Product, error) {
 }
 
 func (repo *ProductRepository) Update(product *models.Product) error {
-	query := "UPDATE products GET name = $1, price = $2, stock = $3 WHERE id = $4"
+	query := "UPDATE produk SET name = $1, price = $2, stok = $3 WHERE id = $4"
 	result, err := repo.db.Exec(query, product.Name, product.Price, product.Stock, product.ID)
 	if err != nil {
 		return err
