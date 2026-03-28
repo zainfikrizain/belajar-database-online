@@ -15,6 +15,10 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
+func NewCategoriesRepository(db *sql.DB) *ProductRepository {
+	return &ProductRepository{db: db}
+}
+
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error) {
 	rows, err := repo.db.QueryContext(ctx, "SELECT id, name, price, stok FROM produk")
 	if err != nil {
@@ -97,4 +101,22 @@ func (repo *ProductRepository) Delete(id int) error {
 	}
 
 	return nil
+}
+
+func (r *ProductRepository) GetCategoryByProductName(ctx context.Context, name string) (string, error) {
+	query := `
+	SELECT categories.name
+	FROM categories
+	JOIN produk ON produk.category_id = categories.id
+	WHERE produk.name ILIKE $1
+	LIMIT 1
+	`
+
+	var categoryName string
+	err := r.db.QueryRowContext(ctx, query, "%"+name+"%").Scan(&categoryName)
+	if err != nil {
+		return "", err
+	}
+
+	return categoryName, nil
 }

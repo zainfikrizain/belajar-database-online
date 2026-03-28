@@ -19,6 +19,10 @@ func NewProductHandler(service *services.ProductService) *ProductHandler {
 	return &ProductHandler{service: service}
 }
 
+func NewCategoryHandler(service *services.ProductService) {
+
+}
+
 func (h *ProductHandler) GetAll(c echo.Context) error {
 	products, err := h.service.GetAll(c.Request().Context())
 	if err != nil {
@@ -67,7 +71,6 @@ func (h *ProductHandler) GetByID(c echo.Context) error {
 			"error": err.Error(),
 		})
 	}
-
 	return c.JSON(http.StatusOK, product)
 }
 
@@ -123,5 +126,26 @@ func (h *ProductHandler) Delete(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, map[string]string{
 		"message": "deleted successfully",
+	})
+}
+
+func (h *ProductHandler) GetCategoryByProductName(c echo.Context) error {
+	name := c.QueryParam("name")
+	if name == "" {
+		return c.JSON(400, map[string]string{
+			"error": "name is required",
+		})
+	}
+
+	category, err := h.service.GetCategoryByProductName(c.Request().Context(), name)
+	if err != nil {
+		return c.JSON(500, map[string]string{
+			"error": err.Error(),
+		})
+	}
+
+	return c.JSON(200, map[string]string{
+		// "product_name":  name,
+		"category_name": category,
 	})
 }

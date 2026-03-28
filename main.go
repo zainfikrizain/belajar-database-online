@@ -58,7 +58,7 @@ func main() {
 	e.GET("/api/produk/:id", productHandler.GetByID)
 	e.PUT("/api/produk/:id", productHandler.Update)
 	e.DELETE("/api/produk/:id", productHandler.Delete)
-
+	e.GET("/api/produk/category", productHandler.GetCategoryByProductName)
 	// start
 	e.Logger.Fatal(e.Start(":" + config.Port))
 }

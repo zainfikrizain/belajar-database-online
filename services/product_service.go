@@ -37,3 +37,7 @@ func (s *ProductService) Update(product *models.Product) error {
 func (s *ProductService) Delete(id int) error {
 	return s.repo.Delete(id)
 }
+
+func (s *ProductService) GetCategoryByProductName(ctx context.Context, name string) (string, error) {
+	return s.repo.GetCategoryByProductName(ctx, name)
+}
