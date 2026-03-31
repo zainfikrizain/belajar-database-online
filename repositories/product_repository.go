@@ -15,10 +15,6 @@ func NewProductRepository(db *sql.DB) *ProductRepository {
 	return &ProductRepository{db: db}
 }
 
-func NewCategoriesRepository(db *sql.DB) *ProductRepository {
-	return &ProductRepository{db: db}
-}
-
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]models.Product, error) {
 	rows, err := repo.db.QueryContext(ctx, "SELECT id, name, price, stok FROM produk")
 	if err != nil {
